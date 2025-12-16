@@ -8,6 +8,10 @@ async function getDatabase() {
     return dbInstance;
   }
 
+  // const path = require("path");
+  // // ...
+  // storage: path.join(__dirname, "data", "database.sqlite"); // Saves to data folder (will persist)
+
   // Open the database file
   const db = await open({
     filename: "./data/my-database.db", // This file will be created automatically

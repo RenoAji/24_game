@@ -4,7 +4,8 @@ services:
     image: redis:alpine
     container_name: my_redis
     restart: always
-    # No ports mapping needed if only backend accesses it internally
+    volumes:
+      - redis_data:/data # <--- Maps internal /data to a Docker Volume
 
   # 2. Backend Service
   backend:
@@ -13,7 +14,7 @@ services:
     restart: always
     environment:
       - PORT=3000
-      - REDIS_URL=redis://my_redis:6379 # Matches the service name above
+      - REDIS_URL=redis://redis:6379 # Matches the service name above
       - REDIS_PORT=6379
       - API_PREFIX=/api
     volumes:
@@ -31,3 +32,6 @@ services:
       - "8080:80" # Access app at localhost:8080
     depends_on:
       - backend
+
+volumes:
+  redis_data:

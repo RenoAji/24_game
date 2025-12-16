@@ -86,7 +86,7 @@ router.post("/", async function (req, res, next) {
     const username = req.session.username;
 
     // Increment score in Redis sorted set
-    const newRedisScore = awaitredisClient.zIncrBy("leaderboard", 1, username);
+    const newRedisScore = await redisClient.zIncrBy("leaderboard", 1, username);
     const top10 = await redisClient.zRangeWithScores("leaderboard", 0, 9, {
       REV: true,
     });

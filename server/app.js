@@ -65,8 +65,11 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, () => {
-  console.log("Server is listening on port", server.address().port);
+const PORT = process.env.PORT || 3000;
+
+// The '0.0.0.0' is CRITICAL for Docker networking
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
 
 module.exports = app;
