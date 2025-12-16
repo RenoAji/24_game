@@ -1,3 +1,4 @@
+// import necessary modules
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
@@ -7,6 +8,7 @@ var http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 
+// route imports
 var quizRouter = require("./routes/quiz");
 var answerRouter = require("./routes/answer");
 var registerRouter = require("./routes/register");
@@ -42,7 +44,7 @@ const server = http.createServer(app);
 // 2. Initialize Socket.IO on that server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Your Vue frontend port
+    origin: "http://localhost:5173", // Vue frontend port
     methods: ["GET", "POST"],
   },
 });
@@ -67,9 +69,32 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 3000;
 
-// The '0.0.0.0' is CRITICAL for Docker networking
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    const redisClient = require("./libs/redis_client");
+    // 1. Explicitly Connect to Redis
+    // This ensures we are connected BEFORE we try to sync or listen
+    if (!redisClient.isOpen) {
+      await redisClient.connect();
+      console.log("✅ Redis Connected via app.js");
+    }
+
+    // 2. Sync Data
+    // import redis client, database, and sync function
+    const db = require("./libs/database");
+    const database = await db();
+    const syncLeaderboard = require("./libs/sync");
+    await syncLeaderboard(database, redisClient);
+
+    // 3. Start Server
+    server.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server is listening on port ${PORT}`);
+    });
+  } catch (e) {
+    console.error("Fatal Error:", e);
+  }
+}
+
+startServer();
 
 module.exports = app;

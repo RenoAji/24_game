@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
 const redisClient = require("../libs/redis_client"); // Redis client
-const client = require("../libs/redis_client");
 
 // Safe math expression evaluator
 function evaluateExpression(expr) {

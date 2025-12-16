@@ -1,25 +1,30 @@
+// libs/database.js
 const sqlite3 = require("sqlite3").verbose();
 const { open } = require("sqlite");
+const path = require("path");
+const fs = require("fs");
 
-let dbInstance = null;
+// Ensure folder exists (Crash prevention)
+const dbFolder = path.resolve("./data");
+if (!fs.existsSync(dbFolder)) {
+  fs.mkdirSync(dbFolder, { recursive: true });
+}
 
-async function getDatabase() {
-  if (dbInstance) {
-    return dbInstance;
+let dbPromise = null;
+
+function getDatabase() {
+  if (dbPromise) {
+    return dbPromise;
   }
 
-  // const path = require("path");
-  // // ...
-  // storage: path.join(__dirname, "data", "database.sqlite"); // Saves to data folder (will persist)
+  // Assign the PROMISE immediately to the variable
+  dbPromise = (async () => {
+    const db = await open({
+      filename: path.join(dbFolder, "my-database.db"),
+      driver: sqlite3.Database,
+    });
 
-  // Open the database file
-  const db = await open({
-    filename: "./data/my-database.db", // This file will be created automatically
-    driver: sqlite3.Database,
-  });
-
-  // Create a table if it doesn't exist
-  await db.exec(`
+    await db.exec(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
@@ -29,8 +34,10 @@ async function getDatabase() {
         )
     `);
 
-  dbInstance = db;
-  return dbInstance;
+    return db;
+  })();
+
+  return dbPromise;
 }
 
 module.exports = getDatabase;
