@@ -1,0 +1,33 @@
+services:
+  # 1. Redis Service
+  redis:
+    image: redis:alpine
+    container_name: my_redis
+    restart: always
+    # No ports mapping needed if only backend accesses it internally
+
+  # 2. Backend Service
+  backend:
+    build: ./server
+    container_name: my_backend
+    restart: always
+    environment:
+      - PORT=3000
+      - REDIS_URL=redis://my_redis:6379 # Matches the service name above
+      - REDIS_PORT=6379
+      - API_PREFIX=/api
+    volumes:
+      # Persist SQLite data so it survives container restarts
+      - ./server/data:/app/data
+    depends_on:
+      - redis
+
+  # 3. Frontend Service (Vue + Nginx)
+  frontend:
+    build: ./client
+    container_name: my_frontend
+    restart: always
+    ports:
+      - "8080:80" # Access app at localhost:8080
+    depends_on:
+      - backend
