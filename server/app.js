@@ -15,15 +15,29 @@ var registerRouter = require("./routes/register");
 var loginRouter = require("./routes/login");
 var leaderboardRouter = require("./routes/leaderboard");
 
+const { RedisStore } = require("connect-redis");
+const redisClient = require("./libs/redis_client");
+
 var app = express();
 
 const apiPrefix = process.env.API_PREFIX || "/";
 
 app.use(
   session({
-    resave: false, // don't save session if unmodified
-    saveUninitialized: false, // don't create session until something stored
+    // ✅ ADD THIS BLOCK
+    store: new RedisStore({
+      client: redisClient,
+      prefix: "myapp:sess:", // Optional: organize keys nicely in Redis
+    }),
+
+    resave: false,
+    saveUninitialized: false,
     secret: "keyboard cat",
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 1 Day
+      secure: false, // Set 'true' if you use https in production
+      httpOnly: true, // Good security practice
+    },
   })
 );
 
@@ -71,7 +85,6 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    const redisClient = require("./libs/redis_client");
     // 1. Explicitly Connect to Redis
     // This ensures we are connected BEFORE we try to sync or listen
     if (!redisClient.isOpen) {

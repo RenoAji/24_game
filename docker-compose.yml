@@ -12,6 +12,7 @@ services:
     build: ./server
     container_name: my_backend
     restart: always
+    command: npm run dev
     environment:
       - PORT=3000
       - REDIS_URL=redis://redis:6379 # Matches the service name above
@@ -20,6 +21,8 @@ services:
     volumes:
       # Persist SQLite data so it survives container restarts
       - ./server/data:/app/data
+      - ./server:/app
+      - /app/node_modules
     depends_on:
       - redis
 

@@ -3,6 +3,7 @@ var router = express.Router();
 
 /* GET quiz numbers. */
 router.get("/", function (req, res, next) {
+  console.log("Generating new quiz numbers tes");
   // const quizId = generateId();
   const numbers = [];
   for (let i = 0; i < 4; i++) {

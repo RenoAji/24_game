@@ -80,12 +80,15 @@ router.post("/", async function (req, res, next) {
     });
   }
 
+  console.log("Evaluated result:", result, "Is correct:", isCorrect);
+  console.log("Session username:", req.session.username);
   if (isCorrect && req.session.username) {
     console.log("Updating score for", req.session.username);
     const username = req.session.username;
 
     // Increment score in Redis sorted set
     const newRedisScore = await redisClient.zIncrBy("leaderboard", 1, username);
+    console.log("New Redis score:", newRedisScore);
     const top10 = await redisClient.zRangeWithScores("leaderboard", 0, 9, {
       REV: true,
     });
@@ -102,6 +105,7 @@ router.post("/", async function (req, res, next) {
 
     // Emit updated leaderboard to all connected clients
     const data = top10.map((user) => ({
+      rank: top10.indexOf(user) + 1,
       username: user.value,
       score: user.score,
     }));
