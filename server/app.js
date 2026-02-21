@@ -27,7 +27,7 @@ app.use(
     // ✅ ADD THIS BLOCK
     store: new RedisStore({
       client: redisClient,
-      prefix: "myapp:sess:", // Optional: organize keys nicely in Redis
+      prefix: "myapp:sess:",
     }),
 
     resave: false,

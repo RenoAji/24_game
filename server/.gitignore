@@ -1,4 +1,4 @@
-./data/my-database.db
+./data/
 node_modules
 *.rdb
 dump.rdb

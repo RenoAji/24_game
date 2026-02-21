@@ -7,3 +7,5 @@ You can run this project with docker compose
 ```
 docker compose --build
 ```
+
+access the game at http://localhost:8080
