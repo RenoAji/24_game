@@ -58,7 +58,7 @@ const server = http.createServer(app);
 // 2. Initialize Socket.IO on that server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Vue frontend port
+    origin: process.env.SOCKET_ORIGIN || "http://localhost:5173", // Vue frontend port
     methods: ["GET", "POST"],
   },
 });
