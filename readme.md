@@ -5,7 +5,7 @@ Simple game project with realtime leaderboard. using redis sorted sets and webso
 You can run this project with docker compose
 
 ```
-docker compose --build
+docker compose up --build
 ```
 
 access the game at http://localhost:8080
