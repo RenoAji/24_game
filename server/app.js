@@ -46,6 +46,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+// Serve Vue frontend from Vite build output
+const frontendPath = path.join(__dirname, "../client/dist");
+app.use(express.static(frontendPath));
+
 app.use(cors()); // Allow CORS for development
 app.use((req, res, next) => {
   req.io = io;
@@ -68,6 +73,12 @@ app.use(`${apiPrefix}/answer`, answerRouter);
 app.use(`${apiPrefix}/register`, registerRouter);
 app.use(`${apiPrefix}/login`, loginRouter);
 app.use(`${apiPrefix}/leaderboard`, leaderboardRouter);
+
+// Serve index.html for Vue Router (must be after API routes)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
