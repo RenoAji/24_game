@@ -32,13 +32,13 @@ app.use(
 
     resave: false,
     saveUninitialized: false,
-    secret: "keyboard cat",
+    secret: process.env.SESSION_SECRET || "keyboard cat",
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // 1 Day
       secure: false, // Set 'true' if you use https in production
       httpOnly: true, // Good security practice
     },
-  })
+  }),
 );
 
 app.use(logger("dev"));
